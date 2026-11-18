@@ -4,8 +4,8 @@
   "description": "Plugins do Gym Rank X Business.",
   "plugins": [
     {
-      "name": "grx-inteligencia",
-      "source": "./grx-inteligencia",
+      "name": "grx-intelligence",
+      "source": "./grx-intelligence",
       "description": "Importe planilhas, conecte APIs e analise os dados de RH na Inteligência do Gym Rank X Business."
     }
   ]

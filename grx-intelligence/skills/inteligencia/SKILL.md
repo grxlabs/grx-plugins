@@ -36,6 +36,15 @@ Read the reference before acting; each one is the full procedure.
 
 After a source brings new data, and whenever you start working with the data in a conversation, check list_intel_definitions(status "unlabeled", limit 1): its "unlabeled" count says how many fields still have no friendly name. When it is above zero, offer once to write the data dictionary.
 
+## Full documentation
+When a reference does not answer (an exact field, a transformation, a query kind, an error code), read the documentation for agents, in Markdown: https://business.gymrankx.com/docs/intelligence/llms.txt lists every page. The ones you will need most:
+- Mapping operations, with input and output examples: https://business.gymrankx.com/docs/intelligence/mapping/operations.md
+- Dates and times the mapping reads: https://business.gymrankx.com/docs/intelligence/mapping/dates.md
+- Query kinds and fields: https://business.gymrankx.com/docs/intelligence/queries/index.md
+- API recipes: https://business.gymrankx.com/docs/intelligence/api-recipes/steps-v2.md
+- Source error codes and fixes: https://business.gymrankx.com/docs/intelligence/observability/error-codes.md
+- Ready-made flows for known files: https://business.gymrankx.com/docs/intelligence/cookbook/medical-certificates.md
+
 ## Delegating (when your client has subagents)
 If the agents of this plugin are available, delegate the trial and error and keep the conversation with the user:
 - explorar-arquivo: reads a workbook (sheets, layout, existing bases) and reports. Read only.
