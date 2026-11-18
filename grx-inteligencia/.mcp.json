@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "gym-rank-x": {
+      "type": "http",
+      "url": "https://srv01.gymrankx.com/api/business/mcp"
+    }
+  }
+}

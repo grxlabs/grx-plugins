@@ -1,0 +1,10 @@
+{
+  "name": "grx-inteligencia",
+  "version": "0.1.0",
+  "description": "Importe planilhas, conecte APIs e analise os dados de RH na Inteligência do Gym Rank X Business.",
+  "author": { "name": "Gym Rank X", "url": "https://gymrankx.com" },
+  "homepage": "https://business.gymrankx.com",
+  "repository": "https://github.com/grxlabs/grx-plugins",
+  "icon": "assets/icon.png",
+  "privacyPolicyUrl": "https://gymrankx.com/terms/privacy"
+}
