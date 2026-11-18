@@ -2,10 +2,14 @@
 
 ## Answering a question about the data
 1. list_intel_definitions (kind event, or search) to find the real event and property names, their friendly label, description and unit (horas, dias, R$, %).
-2. run_intel_query with the right kind: trends (series over time, breakdown, compare), events (the records), persons (one row per person with metrics and having), funnel, retention, matrix, scatter, paths. Every query needs date_range.from ("-30d", "this_month", "2026-10-01"); weeks start on Monday in the company time zone. source restricts a series to one source (id or exact name). The schema of the tool describes every field.
+2. run_intel_query with the right kind: trends (series over time, breakdown, compare), events (the records), persons (one row per person with metrics and having), funnel, retention, matrix, scatter, paths. Every query needs date_range.from ("-30d", "this_month", "2026-10-01"); weeks start on Monday in the company time zone. source restricts a series to one source (id or exact name). A business word can be several events ("atestados" = atestado_medico, declaracao_de_horas...): find them all in the catalog and pass the list in event (series and events queries sum them). The schema of the tool describes every field; detail per kind: https://business.gymrankx.com/docs/intelligence/queries/index.md
+   - Retention: the first bucket also holds everyone who was already active when the data begins (their first event is the first record loaded). Start date_range.from one bucket after the data begins, or say so. Retention has no source field: restrict it with cohort_id.
 3. Answer with the numbers in one or two sentences: the biggest deviation or the top item ("Quem fez 4+ check-ins teve 15,8% com atestado, contra 23,8% de quem não usa"). Use the friendly label, never the technical name. Say when a sample is too small to conclude.
 
 Crossing sources: persons with events in each source. A cohort with match "all" and one behavior per source (or per event with operator and count) selects them; preview_intel_cohort counts without saving, create_intel_cohort saves it, and cohort_id restricts any query to it. Example: "pessoas do ponto com 4+ check-ins Wellhub" versus "com 0 check-ins" (operator "eq", count 0).
+- "People who did A in period P and B in period Q" is a cohort with two behaviors, each with its own event, source and date_range; never a funnel (a funnel counts steps done in order inside one date_range).
+- A behavior with only source counts every event of that source: give event too unless any event is meant. A behavior takes one event; for several, use one behavior each.
+Detail: https://business.gymrankx.com/docs/intelligence/queries/cohorts.md
 
 ## Dashboards
 - list_intel_dashboards and get_intel_dashboard show what exists. create_intel_dashboard(name, widgets) creates one with up to 20 widgets; add_intel_widget(dashboard_id, title, kind, query, layout, options) adds one; update_intel_widget, delete_intel_widget and set_intel_dashboard_layout (12-column grid) change them.
@@ -15,3 +19,7 @@ Crossing sources: persons with events in each source. A cohort with match "all" 
 
 ## Alerts
 create_intel_alert(widget_id, name, condition, schedule_minutes, recipients) watches a trend widget (number, line or bar): above, below, change_up_pct or change_down_pct. test_intel_alert measures now without sending. list_intel_notifications shows what fired.
+- The alert measures the total of the widget's whole date_range (no buckets, no breakdown); change_* compares with the previous period of the same length. For "por mês" use a number widget with date_range this_month; for "por semana", -7d.
+- Dashboard filters never reach the alert: it runs the saved widget query only.
+- "Me avise": the recipient is the user e-mail from whoami (over MCP it comes as a mask token; pass it exactly, the server resolves it).
+Detail: https://business.gymrankx.com/docs/intelligence/alerts.md
