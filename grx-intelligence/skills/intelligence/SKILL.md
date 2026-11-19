@@ -39,6 +39,17 @@ Read the reference before acting; each one is the full procedure.
 - Questions about the data, charts, dashboards, cohorts, alerts: references/analysis.md.
 - Friendly names, descriptions and units of the data: references/dictionary.md.
 
+## Charts and dashboards (always, even without reading the reference)
+The user rarely names a chart. Pick it from the shape of the answer:
+- One value: number. A rate or share of a group: number with formula "A / B * 100" (B = math "persons", the people of the cohort) and format percent. A target: kpi_goal, or bullet when it has ranges (options.goal + options.reference_bands).
+- Groups of people compared (users vs non-users of the gym): one bar_ranked with breakdown {"type": "cohort", "cohorts": [...]} and the rate in percent, never counts; bar_grouped for the same by month. Cohorts overlap: never pie, donut or stacked bars with them. Cohort names become the bar labels: keep them short and without the period ("Sem check-in", "1+ check-ins", "4+ check-ins"); put the period in the description.
+- Ranked categories (motivo, especialidade, departamento): bar_ranked with a breakdown. Several events as categories: one series with the event list and breakdown {"type": "event", "key": "$event"}. Never several series stacked into one "total" bar.
+- Over time: line or bar on whole weeks or months. Noisy series: add a series with rolling {"window": 4}. Progress within the period: cumulative true with options.goal as the budget. Two measures with different scales: combo with a right axis. 4 to 12 groups over time: small_multiples. A value that barely moves (elegíveis, assinantes): number, not a line.
+- Spread per person ("concentrado em poucos?"): histogram (or boxplot to compare groups) of a distribution query scoped with cohort_id. Headcount movement: waterfall.
+- One period for the whole dashboard (its filters), the same way of counting per idea, the unit in the title or options.unit, no counts in titles, answer first (a row of numbers), at most one text widget (w 12, h 1 or 2). Health data (CID, especialidade, saúde mental): totals only.
+- The dashboard tools return warnings: fix every one with update_intel_widget, then run_intel_widget each widget before you report.
+Full criterion: https://business.gymrankx.com/docs/intelligence/dashboards/choosing-charts.md; every kind with an example: https://business.gymrankx.com/docs/intelligence/dashboards/catalog.md; worked HR questions: https://business.gymrankx.com/docs/intelligence/dashboards/examples.md
+
 After a source brings new data, and whenever you start working with the data in a conversation, check list_intel_definitions(status "unlabeled", limit 1): its "unlabeled" count says how many fields still have no friendly name. When it is above zero, offer once to write the data dictionary.
 
 ## Full documentation

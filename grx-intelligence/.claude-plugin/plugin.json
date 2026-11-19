@@ -1,6 +1,6 @@
 {
   "name": "grx-intelligence",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Import spreadsheets, connect APIs and analyze HR data in Gym Rank X Business Intelligence.",
   "author": { "name": "Gym Rank X", "url": "https://gymrankx.com" },
   "homepage": "https://business.gymrankx.com",
