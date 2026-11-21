@@ -75,7 +75,7 @@ Check with `codex mcp list` or `/mcp`. In the IDE extension and the app, the ser
 
 #### Any other MCP client
 
-Add the MCP server URL above with OAuth. If the client has no OAuth, a console manager can create an API token in the console (**Configurações > Integrações**) and the client sends it as `Authorization: Bearer grxb_...`. Keep the token secret: it acts as you in that company.
+Add the MCP server URL above with OAuth and sign in with your Gym Rank X Business account.
 
 ### Try it
 
@@ -164,7 +164,7 @@ Confira com `codex mcp list` ou `/mcp`. Na extensão de IDE e no app, o servidor
 
 #### Qualquer outro cliente MCP
 
-Adicione a URL do servidor MCP acima com OAuth. Se o cliente não tiver OAuth, um gestor cria um token de API no console (**Configurações > Integrações**) e o cliente manda `Authorization: Bearer grxb_...`. Guarde o token em segredo: ele age como você naquela empresa.
+Adicione a URL do servidor MCP acima com OAuth e entre com a sua conta do Gym Rank X Business.
 
 ### Experimente
 
