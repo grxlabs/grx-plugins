@@ -1,37 +1,25 @@
-# Questions, charts, dashboards, cohorts and alerts
+# Questions, charts, dashboards and alerts: checklist
 
-## Answering a question about the data
-1. list_intel_definitions (kind event, or search) to find the real event and property names, their friendly label, description and unit (horas, dias, R$, %).
-2. run_intel_query with the right kind: trends (series over time, breakdown, compare), events (the records), persons (one row per person with metrics and having), funnel, retention, matrix, scatter, paths, distribution (one value per person, then its spread: median, p90, bins). Every query needs date_range.from ("-30d", "this_month", "2026-10-01"); weeks start on Monday in the company time zone. source restricts a series to one source (id or exact name). A business word can be several events ("atestados" = atestado_medico, declaracao_de_horas...): find them all in the catalog and pass the list in event (series and events queries sum them). The schema of the tool describes every field; detail per kind: https://business.gymrankx.com/docs/intelligence/queries/index.md
-   - Retention: the first bucket also holds everyone who was already active when the data begins (their first event is the first record loaded). Start date_range.from one bucket after the data begins, or say so. Retention has no source field: restrict it with cohort_id.
-   - Typical value per event (median length of a certificate): math median, p75 or p90 with math_property. Per person ("concentrado em poucos?"): a distribution query with cohort_id as the scope (without it every person of the company counts) and include_zero true. Detail: https://business.gymrankx.com/docs/intelligence/queries/distribution.md
-   - Running totals and smoothing: series cumulative true (count, sum, days only) or rolling {"window": N}; not with interval total; total stays the raw period total. Detail: https://business.gymrankx.com/docs/intelligence/queries/time-transforms.md
-3. Answer with the numbers in one or two sentences: the biggest deviation or the top item ("Quem fez 4+ check-ins teve 15,8% com atestado, contra 23,8% de quem não usa"). Use the friendly label, never the technical name. Say when a sample is too small to conclude.
+Use it for a specific question or a named chart, comparisons included ("quem treina falta menos?"): build directly. An open question or a leadership dashboard goes to references/insights.md.
 
-Crossing sources: persons with events in each source. A cohort with match "all" and one behavior per source (or per event with operator and count) selects them; preview_intel_cohort counts without saving, create_intel_cohort saves it, and cohort_id restricts any query to it. Example: "pessoas do ponto com 4+ check-ins Wellhub" versus "com 0 check-ins" (operator "eq", count 0).
-- "People who did A in period P and B in period Q" is a cohort with two behaviors, each with its own event, source and date_range; never a funnel (a funnel counts steps done in order inside one date_range).
-- A behavior with only source counts every event of that source: give event too unless any event is meant. A behavior takes one event; for several, use one behavior each.
-- Comparing groups: one cohort per group with the same base and disjoint rules ("0", "1 a 3", "4+ check-ins"), named so they sort in order. Then one trends query with breakdown {"type": "cohort", "cohorts": [ids]} and order "label": series A unique_persons of the event, series B math "persons", formula "A / B * 100". Every cohort shows up; a person in two cohorts counts in both. cohort_id on a series restricts only that series. Funnel and matrix refuse a cohort breakdown.
-Detail: https://business.gymrankx.com/docs/intelligence/queries/cohorts.md and https://business.gymrankx.com/docs/intelligence/queries/comparing-groups.md
+## A question about the data
+The required page: https://business.gymrankx.com/docs/intelligence/queries/index.md. Open when the question needs it: groups of people compared, https://business.gymrankx.com/docs/intelligence/queries/comparing-groups.md; saved groups, https://business.gymrankx.com/docs/intelligence/queries/cohorts.md; a value spread per person, https://business.gymrankx.com/docs/intelligence/queries/distribution.md; running totals and smoothing, https://business.gymrankx.com/docs/intelligence/queries/time-transforms.md
+1. list_intel_definitions for the real names, labels and units; a business word can be several events.
+2. run_intel_query with an explicit date_range. Crossing sources or comparing groups: the overlap window of the sources, cohorts (preview_intel_cohort, create_intel_cohort) and a rate over math "persons", as comparing-groups.md says.
+3. Answer in one or two sentences with the number, the comparison and the base, using friendly labels; say when a sample is too small.
 
-## Dashboards
-- list_intel_dashboards and get_intel_dashboard show what exists. create_intel_dashboard(name, widgets) creates one with up to 20 widgets; add_intel_widget(dashboard_id, title, kind, query, layout, options) adds one; update_intel_widget, delete_intel_widget and set_intel_dashboard_layout (12-column grid) change them.
-- Test every query with run_intel_query before turning it into a widget. In the console chat, pass the artifact_id of that result as query_ref instead of the query.
-- Choose the widget from the shape of the answer, not by habit (full table: https://business.gymrankx.com/docs/intelligence/dashboards/choosing-charts.md):
-  - one number: number (kpi with compare when the change matters); a rate or share of a group: number with formula "A / B * 100" (B = math "persons" for the people of the cohort), format percent; a target: kpi_goal or gauge, bullet with options.reference_bands for qualitative ranges;
-  - ranked categories (motivo, especialidade, departamento): bar_ranked with a breakdown; several events as categories: one series with the event list and breakdown {"type": "event", "key": "$event"}; never several series stacked into one "total" bar;
-  - groups of people compared: one bar_ranked with the cohort breakdown and the rate in percent (bar_grouped by month); a row of number widgets, one per cohort, only for 2 to 4 headline values; rates, never counts, when sizes differ;
-  - over time: line or bar with whole buckets (day up to 14 days, week up to 3 months, month beyond); noisy: add a rolling series; progress in the period: cumulative with goal; two measures with different scales: combo with a right axis; 4 to 12 groups: small_multiples; a stock that barely moves (elegíveis, assinantes): number, not a line;
-  - spread per person: histogram (up to 4 groups) or boxplot (up to 12) of a distribution query; headcount movement: waterfall (start_series = headcount at the start, terminations with options.series[i].negative);
-  - context on a chart: compare, goal, reference_lines, reference_bands, annotations; which kinds draw each: https://business.gymrankx.com/docs/intelligence/dashboards/overlays.md; every kind with an example: https://business.gymrankx.com/docs/intelligence/dashboards/catalog.md
-- Make the dashboard coherent: one period in the dashboard filters; the same way of counting per idea (people or days, said in the title or options.unit); no counts in titles (they go stale); answer first (a row of numbers), then the main comparison, then breakdowns, trends last; at most one text widget, w 12, h 1 or 2; health data (CID, especialidade, saúde mental) only as totals, never categories with fewer than 5 people.
-- Before reporting, run_intel_widget each widget and fix what reads wrong: one bucket on a time chart, one stacked "total" bar, flat lines, a partial first or last bucket, all zeros, more than 6 legend entries.
-- Titles in plain Portuguese with the friendly labels.
-- run_intel_widget runs a saved widget; drill_intel_widget(widget_id, point) returns the events or persons query behind a clicked point, to answer "who are they".
+## A chart or a dashboard
+The required page: https://business.gymrankx.com/docs/intelligence/dashboards/choosing-charts.md. Open when you need them: tools and fields, https://business.gymrankx.com/docs/intelligence/dashboards/index.md; a kind and its example, https://business.gymrankx.com/docs/intelligence/dashboards/catalog.md; overlays, https://business.gymrankx.com/docs/intelligence/dashboards/overlays.md; worked HR questions, https://business.gymrankx.com/docs/intelligence/dashboards/examples.md; what the server refuses, https://business.gymrankx.com/docs/intelligence/capabilities.md
+1. list_intel_dashboards and get_intel_dashboard to see what exists.
+2. Pick the widget from the shape of the answer (choosing-charts.md#1-name-the-answer-then-pick-the-widget).
+3. Test every query with run_intel_query; send its query (in the console chat, query_ref).
+4. create_intel_dashboard or add_intel_widget with an idempotency_key: takeaway title, options.subtitle, highlight and reference line when they carry the point.
+5. Fix every warning (update_intel_widget, set_intel_dashboard_layout), then run_intel_widget each widget and fix what reads wrong.
+6. Tell the user in one or two lines what it shows.
+"Who are they" on a point: drill_intel_widget, then run_intel_query.
 
 ## Alerts
-create_intel_alert(widget_id, name, condition, schedule_minutes, recipients) watches a trend widget (number, line or bar): above, below, change_up_pct or change_down_pct. test_intel_alert measures now without sending. list_intel_notifications shows what fired.
-- The alert measures the total of the widget's whole date_range (no buckets, no breakdown); change_* compares with the previous period of the same length. For "por mês" use a number widget with date_range this_month; for "por semana", -7d.
-- Dashboard filters never reach the alert: it runs the saved widget query only.
-- "Me avise": the recipient is the user e-mail from whoami (over MCP it comes as a mask token; pass it exactly, the server resolves it).
-Detail: https://business.gymrankx.com/docs/intelligence/alerts.md
+The required page (what is measured, where the widget goes, conditions, recipients): https://business.gymrankx.com/docs/intelligence/alerts.md
+1. The widget the alert watches (alerts.md#the-widget-of-an-alert): on an existing dashboard of the topic, else on a dashboard named "Alertas"; a number widget whose trends query measures exactly the period of the alert (this_month for "por mês", -7d for "por semana"), with one series that lists every event of the business word. Dashboard filters never reach it.
+2. create_intel_alert with an idempotency_key; "me avise" is the user e-mail from whoami, passed as received.
+3. test_intel_alert, and tell the user the value it measures now and on which dashboard the widget is. list_intel_notifications shows what fired.
